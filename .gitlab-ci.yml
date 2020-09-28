@@ -1,0 +1,35 @@
+# This file is a template, and might need editing before it works on your project.
+---
+
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+
+cache:
+  paths:
+    - .m2/repository
+
+job1:
+    script:
+        - 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false'
+    image: maven:3.3.9-jdk-8
+job2:
+    script:
+        - 'mvn $MAVEN_CLI_OPTS verify sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN'
+    image: maven:3.3.9-jdk-8
+
+
+#.validate: &validate
+#  stage: build
+#  script:
+#    - 'mvn $MAVEN_CLI_OPTS test-compile'
+
+#.verify: &verify
+#  stage: test
+#  script:
+#    - 'mvn $MAVEN_CLI_OPTS verify site site:stage'
+#  except:
+#   - master
+
+
